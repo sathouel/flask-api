@@ -1,7 +1,5 @@
 import os
 
-from api.tests import TEST_PKG_PATH
-
 API_PKG_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -18,5 +16,5 @@ class Config(BaseConfig):
 
 
 class TestConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(TEST_PKG_PATH, 'test.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///'
     TESTING = True
