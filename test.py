@@ -6,7 +6,7 @@ from api.config import TestConfig
 from api.models import User
 
 
-class TestCase(unittest.TestCase):
+class TestAuth(unittest.TestCase):
     def setUp(self):
         self.app = create_app(TestConfig)
         self.app_context = self.app.app_context()
@@ -68,6 +68,15 @@ class TestCase(unittest.TestCase):
 
         users = User.query.all()
         self.assertEqual(len(users), 1)
+
+    def testLoginUser(self):
+        usr = {
+            'username': 'sathouel',
+            'email': 'sathouel@tst.com',
+            'password': 'test'
+        }
+        resp = self.client.post('/auth/register', json=usr)
+        self.assertEqual(resp.status_code, 201)
 
 
 
