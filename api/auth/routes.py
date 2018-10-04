@@ -1,9 +1,10 @@
-from flask import jsonify, request
+from flask import jsonify, request, g
 
 from api import db
 from api.models import User
 from api.errors import bad_request
 from api.auth import bp
+from api.auth import basic_auth
 
 
 @bp.route('/tst')
@@ -27,3 +28,10 @@ def register():
     response = jsonify(user.to_dict())
     response.status_code = 201
     return response
+
+@bp.route('/tokens', methods=['POST'])
+@basic_auth.login_required
+def get_token():
+    token = g.current_user.get_token()
+    db.session.commit()
+    return jsonify({'token': token})
