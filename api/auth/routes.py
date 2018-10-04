@@ -8,7 +8,7 @@ from api.auth import bp
 
 @bp.route('/tst')
 def index():
-    return 'Hello from auth bp!', 200
+    return 'Hello!', 200
 
 
 @bp.route('/register', methods=['POST'])
