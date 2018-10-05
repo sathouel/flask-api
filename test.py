@@ -1,5 +1,7 @@
 import os
 import unittest
+from base64 import b64encode
+from requests.auth import _basic_auth_str
 
 from api import create_app, db
 from api.config import TestConfig
@@ -69,15 +71,36 @@ class TestAuth(unittest.TestCase):
         users = User.query.all()
         self.assertEqual(len(users), 1)
 
-    def testLoginUser(self):
+    def testGetRevokeToken(self):
         usr = {
             'username': 'sathouel',
             'email': 'sathouel@tst.com',
             'password': 'test'
         }
+        # register usr
         resp = self.client.post('/auth/register', json=usr)
         self.assertEqual(resp.status_code, 201)
+        username, password = usr['username'], usr['password']
+        user = User.query.filter_by(username=username).first()
+        self.assertIsNotNone(user)
+        self.assertEqual(user.check_password('test'), True)
 
+        # get token
+        headers = {
+            'Authorization': _basic_auth_str(username, password)
+        }
+        resp = self.client.post('auth/tokens', headers=headers)
+        status_code, data_json = resp.status_code, resp.json
+        self.assertEqual(status_code, 200)
+        token = data_json.get('token')
+        self.assertIsNotNone(token)
+
+        # test_token_auth_required
+        headers = {
+            'Authorization': 'Bearer {}'.format(token)
+        }
+        resp = self.client.delete('/auth/tokens', headers=headers)
+        self.assertEqual(resp.status_code, 204)
 
 
 
